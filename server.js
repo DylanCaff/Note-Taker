@@ -26,24 +26,36 @@ app.get("/notes", function (req, res) {
     res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
-function createNewNote(body, notesArray) {
-    const newNote = body;
-    if (!Array.isArray(notesArray))
-        notesArray = [];
-    
-    if (notesArray.length === 0)
-        notesArray.push(0);
+app.route("/api/notes")
+    .get(function (req, res) {
+        res.json(database);
+    })
+    .post(function (req, res) {
+        let jsonFilePath = path.join(__dirname, "/db/db.json");
+        let newNote = req.body;
+        let highestId = 99;
 
-    body.id = notesArray[0];
-    notesArray[0]++;
+        for (let i = 0; i < database.length; i++) {
+            let individualNote = database[i];
 
-    notesArray.push(newNote);
-    fs.writeFileSync(
-        path.join(__dirname, './db/db.json'),
-        JSON.stringify(notesArray, null, 2)
-    );
-    return newNote;
-}
+            if (individualNote.id > highestId) {
+
+                highestId = individualNote.id;
+            }
+        }
+        newNote.id = highestId + 1;
+        database.push(newNote)
+
+        fs.writeFile(jsonFilePath, JSON.stringify(database), function (err) {
+
+            if (err) {
+                return console.log(err);
+            }
+            console.log("Your note was saved!");
+        });
+        res.json(newNote);
+    });
+
 
 app.post('/api/notes', (req, res) => {
     const newNote = createNewNote(req.body, allNotes);

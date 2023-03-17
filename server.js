@@ -3,8 +3,10 @@ const path = require('path');
 const express = require('express');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
+
+const allNotes = require('./public/db/db.json');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -42,3 +44,12 @@ function createNewNote(body, notesArray) {
     );
     return newNote;
 }
+
+app.post('/api/notes', (req, res) => {
+    const newNote = createNewNote(req.body, allNotes);
+    res.json(newNote);
+});
+
+app.listen(PORT, function () {
+    console.log("App listening on PORT " + PORT);
+});

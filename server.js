@@ -24,12 +24,14 @@ app.get('/api/notes', (req, res) => {
 
 app.route("/api/notes")
     .post(function (req, res) {
+        console.log("post");
         let jsonFilePath = path.join(__dirname, "./db/db.json");
         let newNote = req.body;
         let highestId = 99;
 
         for (let i = 0; i < database.length; i++) {
             let individualNote = database[i];
+           // console.log(individualNote)
 
             if (individualNote.id > highestId) {
 
@@ -52,6 +54,7 @@ app.route("/api/notes")
 
 app.post('/api/notes', (req, res) => {
     const newNote = createNewNote(req.body, allNotes);
+    console.log(createNewNote)
     res.json(newNote);
 });
 
